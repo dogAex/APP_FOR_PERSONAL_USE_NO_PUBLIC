@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.18.1)
+project("qgghost")
+add_library(qgghost SHARED native-lib.cpp)
+find_library(log-lib log)
+find_library(vulkan-lib vulkan)
+target_link_libraries(qgghost ${log-lib} ${vulkan-lib})

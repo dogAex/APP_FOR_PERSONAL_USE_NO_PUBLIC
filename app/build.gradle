@@ -1,0 +1,30 @@
+plugins {
+    id 'com.android.application'
+}
+android {
+    namespace 'com.qg.ghost'
+    compileSdk 33
+    defaultConfig {
+        applicationId "com.qg.ghost"
+        minSdk 29
+        targetSdk 33
+        versionCode 231
+        versionName "2.3.1"
+    }
+    externalNativeBuild {
+        cmake { 
+            path "src/main/cpp/CMakeLists.txt" 
+            // 强制链接 Vulkan 库
+            arguments "-DANDROID_STL=c++_shared"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
+}
