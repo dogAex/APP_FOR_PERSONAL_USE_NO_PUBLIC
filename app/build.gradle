@@ -13,9 +13,8 @@ android {
     }
     externalNativeBuild {
         cmake { 
+            // 移除 arguments，直接指向 CMakeLists.txt 即可
             path "src/main/cpp/CMakeLists.txt" 
-            // 强制链接 Vulkan 库
-            arguments "-DANDROID_STL=c++_shared"
         }
     }
     compileOptions {
