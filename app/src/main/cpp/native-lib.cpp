@@ -3,6 +3,7 @@
 #include <android/log.h>
 #include <dlfcn.h>
 #include <vulkan/vulkan.h>
+#include <cstring>
 
 #define LOG_TAG "QG_Ghost_Core"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -15,13 +16,20 @@ Java_com_qg_ghost_MainActivity_probeVulkan(JNIEnv* env, jobject) {
     PFN_vkCreateInstance p_vkCreateInstance = (PFN_vkCreateInstance)dlsym(vk_lib, "vkCreateInstance");
     if (!p_vkCreateInstance) return env->NewStringUTF("Failed to find vkCreateInstance");
 
-    VkInstanceCreateInfo createInfo = {0};
+    // 【核心修复】使用 C++ 标准的空初始化，避免类型不匹配报错
+    VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     VkInstance instance;
 
-    if (p_vkCreateInstance(&createInfo, NULL, &instance) == VK_SUCCESS) {
-        LOGI("Vulkan Instance Created!");
+    VkResult res = p_vkCreateInstance(&createInfo, nullptr, &instance);
+    
+    if (res == VK_SUCCESS) {
+        LOGI("Vulkan Instance Created Successfully!");
         return env->NewStringUTF("Vulkan 底层接管成功！幽灵穿透已就绪。");
     }
-    return env->NewStringUTF("Vulkan Instance Creation Failed");
+    
+    // 打印具体的错误码
+    char errBuf[64];
+    snprintf(errBuf, sizeof(errBuf), "Vulkan Failed: %d", res);
+    return env->NewStringUTF(errBuf);
 }
